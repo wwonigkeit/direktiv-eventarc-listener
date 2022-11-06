@@ -16,12 +16,12 @@ import (
 
 // CE store components of the cloud event
 type CE struct {
-	Id          string    `json:"id"`
-	Source      string    `json:"source"`
-	Specversion string    `json:"specversion"`
-	Data        []byte    `json:"data"`
-	Ctype       string    `json:"type"`
-	Ctime       time.Time `json:"time"`
+	Id          string      `json:"id"`
+	Source      string      `json:"source"`
+	Specversion string      `json:"specversion"`
+	Data        interface{} `json:"data"`
+	Ctype       string      `json:"type"`
+	Ctime       time.Time   `json:"time"`
 }
 
 // logCloudEvent logs all information about cloud event
@@ -56,7 +56,14 @@ func readCloudEvent(r *http.Request) (*CE, error) {
 	if err != nil {
 		return nil, err
 	}
-	ce.Data = body
+
+	var x interface{}
+	err = json.Unmarshal(body, &x)
+	if err != nil {
+		return nil, err
+	}
+
+	ce.Data = x
 
 	return ce, nil
 }
