@@ -90,10 +90,22 @@ func sendCloudEvent(event cloudevents.Event) ([]byte, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/namespaces/%s/broadcast", os.Getenv("DIREKTIV_ENDPOINT"), os.Getenv("DIREKTIV_NAMESPACE")), bytes.NewReader(data))
+	direktivurl := ""
+	_, found := os.LookupEnv("DIREKTIV_FILTER")
+
+	if found {
+		direktivurl = fmt.Sprintf("%s/api/namespaces/%s/broadcast/%s", os.Getenv("DIREKTIV_ENDPOINT"), os.Getenv("DIREKTIV_NAMESPACE"), os.Getenv("DIREKTIV_FILTER"))
+	} else {
+		direktivurl = fmt.Sprintf("%s/api/namespaces/%s/broadcast", os.Getenv("DIREKTIV_ENDPOINT"), os.Getenv("DIREKTIV_NAMESPACE"))
+	}
+
+	req, err := http.NewRequest("POST", direktivurl, bytes.NewReader(data))
+
+	// req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/namespaces/%s/broadcast", os.Getenv("DIREKTIV_ENDPOINT"), os.Getenv("DIREKTIV_NAMESPACE")), bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("direktiv-token", fmt.Sprintf("%s", strings.TrimSuffix(os.Getenv("DIREKTIV_TOKEN"), "\n")))
 	req.Header.Add("Content-Type", "application/cloudevents+json; charset=utf-8")
 
