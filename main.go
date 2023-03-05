@@ -99,6 +99,8 @@ func sendCloudEvent(event cloudevents.Event) ([]byte, error) {
 		direktivurl = fmt.Sprintf("%s/api/namespaces/%s/broadcast", os.Getenv("DIREKTIV_ENDPOINT"), os.Getenv("DIREKTIV_NAMESPACE"))
 	}
 
+	log.Printf(direktivurl)
+
 	req, err := http.NewRequest("POST", direktivurl, bytes.NewReader(data))
 
 	// req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/namespaces/%s/broadcast", os.Getenv("DIREKTIV_ENDPOINT"), os.Getenv("DIREKTIV_NAMESPACE")), bytes.NewReader(data))
